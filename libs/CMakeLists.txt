@@ -4,7 +4,7 @@ find_package(OpenGL REQUIRED)
 # glfw (https://www.glfw.org/docs/latest/compile_guide.html)
 set(GLFW_DIR ${CMAKE_CURRENT_SOURCE_DIR}/glfw)
 
-#set(GLFW_LIBRARY_TYPE STATIC) # set by defalut?
+#set(GLFW_LIBRARY_TYPE STATIC) # set by default?
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)

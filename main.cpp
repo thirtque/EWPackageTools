@@ -60,8 +60,6 @@ int main(void) {
     return 0;
 }
 
-
-
 void imguiFrame() {
     ImGuiViewport *viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->Pos);
