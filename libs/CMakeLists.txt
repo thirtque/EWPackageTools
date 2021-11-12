@@ -34,4 +34,7 @@ target_include_directories(imgui
         PUBLIC ${IMGUI_DIR}/backends
         )
 
-target_link_libraries(imgui PUBLIC ${OPENGL_LIBRARIES} glfw)
+target_link_libraries(imgui PRIVATE ${OPENGL_LIBRARIES} glfw)
+
+# fmt (https://fmt.dev/latest/usage.html#usage-with-cmake)
+add_subdirectory(fmt)
