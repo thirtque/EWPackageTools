@@ -1,8 +1,11 @@
+set(DEPENDENCIES_DIR "${PROJECT_SOURCE_DIR}/libs")
+
 # opengl
 find_package(OpenGL REQUIRED)
 
 # glfw (https://www.glfw.org/docs/latest/compile_guide.html)
-set(GLFW_DIR ${CMAKE_CURRENT_SOURCE_DIR}/glfw)
+list(APPEND DEPENDENCIES glfw)
+set(GLFW_DIR ${DEPENDENCIES_DIR}/glfw)
 
 #set(GLFW_LIBRARY_TYPE STATIC) # set by default?
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -12,7 +15,8 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(${GLFW_DIR})
 
 # imgui
-set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
+list(APPEND DEPENDENCIES imgui)
+set(IMGUI_DIR ${DEPENDENCIES_DIR}/imgui)
 
 add_library(imgui STATIC)
 
@@ -37,7 +41,19 @@ target_include_directories(imgui
 target_link_libraries(imgui PRIVATE ${OPENGL_LIBRARIES} glfw)
 
 # nativefiledialog (https://github.com/btzy/nativefiledialog-extended#cmake-projects)
-add_subdirectory(nativefiledialog-extended)
+list(APPEND DEPENDENCIES nfd)
+add_subdirectory(${DEPENDENCIES_DIR}/nativefiledialog-extended)
+
+# zstd (https://github.com/facebook/zstd/tree/dev/build/cmake)
+list(APPEND DEPENDENCIES libzstd_static)
+set(ZSTD_DIR ${DEPENDENCIES_DIR}/zstd)
+set(ZSTD_BUILD_PROGRAMS OFF CACHE BOOL "" FORCE)
+set(ZSTD_BUILD_STATIC ON CACHE BOOL "" FORCE)
+set(ZSTD_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+include_directories(SYSTEM ${ZSTD_DIR}/lib)
+add_subdirectory(${ZSTD_DIR}/build/cmake)
 
 # fmt (https://fmt.dev/latest/usage.html#usage-with-cmake)
-add_subdirectory(fmt)
+list(APPEND DEPENDENCIES fmt::fmt)
+add_subdirectory(${DEPENDENCIES_DIR}/fmt)
+

@@ -6,6 +6,8 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <iostream>
+#include <fstream>
+#include <array>
 #include "dialog.h"
 
 struct State {
@@ -197,20 +199,87 @@ struct Entry {
 
 std::vector<Entry> entries;
 
+struct PackageHeaderData {
+    uint32_t Signature;
+    uint32_t EntryCount;
+};
+
+struct PackageEntryData {
+    std::string Name;
+    uint32_t Position;
+    uint32_t Compression;
+    uint32_t UncompressedLength;
+    uint32_t Length;
+};
+
+// @todo Implement read error handling
+PackageHeaderData ReadPackageHeader(std::ifstream &packageFile) {
+    uint8_t buffer[16];
+    packageFile.read((char *) &buffer, 16);
+
+    uint32_t packageHeader = *(uint32_t *) buffer;
+    uint32_t packageEntryCount = *(uint32_t *) (buffer + 4);
+
+    return {packageHeader, packageEntryCount};
+}
+
+// @todo Implement read error handling
+PackageEntryData ReadPackageEntry(std::ifstream &packageFile) {
+    uint8_t buffer[256]; // Buffer length assumes maximum entry name length of 240 characters
+    for (int i = 0, p = 0; i < 16; i++) {
+        packageFile.read((char *) buffer + i * 16, 16);
+        for (int j = 0; j < 16; j++, p++) {
+            // Find null terminator in entry name
+            if (buffer[p] != 0) {
+                continue;
+            }
+
+            // Read missing bytes for entry information
+            packageFile.read((char *) buffer + (p - j) + 16, j + 1);
+
+            // Deserialize entry name
+            std::string entryName(reinterpret_cast<char const *>(buffer), p);
+            p++; // Skip null terminator
+            // Deserialize entry information
+            uint32_t offset = *(uint32_t *) (buffer + p);
+            uint32_t compression = *(uint32_t *) (buffer + p + 4);
+            uint32_t uncompressedLength = *(uint32_t *) (buffer + p + 8);
+            uint32_t length = *(uint32_t *) (buffer + p + 12);
+
+            return {entryName, offset, compression, uncompressedLength, length};
+        }
+    }
+}
+
 void OpenPackage() {
     auto fileDialogResult = OpenFileDialog();
-    if (fileDialogResult.Status) {
-        std::cout << fileDialogResult.Path << "\n";
-    } else {
-        std::cout << "No path\n";
+    if (!fileDialogResult.Status) {
+        return;
     }
+
+    std::ifstream packageFile;
+    packageFile.open(fileDialogResult.Path, std::ifstream::binary);
+    if (packageFile) {
+        PackageHeaderData packageHeader = ReadPackageHeader(packageFile);
+
+        if (packageHeader.Signature != 0x6A37) {
+            return;
+        }
+
+        entries.clear();
+        for (uint32_t i = 0; i < packageHeader.EntryCount; i++) {
+            PackageEntryData packageEntry = ReadPackageEntry(packageFile);
+            entries.push_back({packageEntry.Name});
+        }
+    }
+    packageFile.close();
 }
 
 void RenderToolBar() {
     ImGui::Button("\ueb62 Save");
 
     ImGui::SameLine();
-    if (ImGui::Button("\ueb62 Load")) {
+    if (ImGui::Button("\ueb62 Open")) {
         OpenPackage();
     }
 }
@@ -243,7 +312,7 @@ void RenderEntryPreview() {
     } else {
         auto windowSize = ImGui::GetWindowSize();
         if (entries.empty()) {
-            auto message = "\ueaff Load a package to start!";
+            auto message = "\ueaff Open a package to start!";
             auto messageSize = ImGui::CalcTextSize(message);
             auto buttonSize = ImVec2{200, ImGui::GetFrameHeight()};
 
@@ -257,13 +326,8 @@ void RenderEntryPreview() {
             ImGui::PushStyleColor(ImGuiCol_Button, HexToVec4(0x0f62fe));
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, HexToVec4(0x0353e9));
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, HexToVec4(0x002d9c));
-            if (ImGui::Button("Load package", buttonSize)) {
-                for (int i = 0; i < 100; i++) {
-                    entries.push_back(Entry{
-                            fmt::format("\uebd0 Entry {}", i),
-                            false
-                    });
-                }
+            if (ImGui::Button("Open package", buttonSize)) {
+                OpenPackage();
             }
             ImGui::PopStyleColor(3);
         } else {

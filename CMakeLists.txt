@@ -1,14 +1,16 @@
 cmake_minimum_required(VERSION 3.20)
 project(untitled3)
 
+set(DEPENDENCIES "")
+
 set(CMAKE_CXX_STANDARD 20)
 
-add_subdirectory(libs)
+include(cmake/Dependencies.cmake)
 
 add_executable(untitled3 dialog.cpp dialog.h)
 
 target_sources(untitled3 PRIVATE main.cpp)
 
-target_link_libraries(untitled3 PRIVATE glfw imgui nfd fmt::fmt)
+target_link_libraries(untitled3 PRIVATE ${DEPENDENCIES})
 
 file(COPY resources DESTINATION ${CMAKE_BINARY_DIR})

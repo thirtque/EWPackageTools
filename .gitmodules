@@ -10,3 +10,6 @@
 [submodule "libs/nativefiledialog-extended"]
 	path = libs/nativefiledialog-extended
 	url = https://github.com/btzy/nativefiledialog-extended.git
+[submodule "libs/zstd"]
+	path = libs/zstd
+	url = https://github.com/facebook/zstd.git
