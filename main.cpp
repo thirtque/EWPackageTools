@@ -5,7 +5,6 @@
 #include <imgui_internal.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-#include <iostream>
 #include <fstream>
 #include <array>
 #include "dialog.h"
@@ -193,8 +192,8 @@ void FrameStart(State &state) {
 }
 
 struct Entry {
-    std::string name;
-    bool opened;
+    std::string Name;
+    bool Opened;
 };
 
 std::vector<Entry> entries;
@@ -212,39 +211,52 @@ struct PackageEntryData {
     uint32_t Length;
 };
 
+uint32_t BufferReadUint32(const uint8_t *buffer) {
+    return buffer[0] | (buffer[1] << 8) | (buffer[2] << 16) | (buffer[3] << 24);
+};
+
 // @todo Implement read error handling
 PackageHeaderData ReadPackageHeader(std::ifstream &packageFile) {
-    uint8_t buffer[16];
-    packageFile.read((char *) &buffer, 16);
+    std::array<uint8_t, 8> buffer{};
+    packageFile.read(reinterpret_cast<char *>(buffer.data()), buffer.size());
 
-    uint32_t packageHeader = *(uint32_t *) buffer;
-    uint32_t packageEntryCount = *(uint32_t *) (buffer + 4);
+    uint32_t packageHeader = BufferReadUint32(buffer.data());
+    uint32_t packageEntryCount = BufferReadUint32(buffer.data() + 4);
 
     return {packageHeader, packageEntryCount};
 }
 
+// Buffer size assumes maximum entry name length of 240 characters
+const auto packageEntryBufferSize = 256;
+const auto packageEntryInformationSize = 16;
+
 // @todo Implement read error handling
 PackageEntryData ReadPackageEntry(std::ifstream &packageFile) {
-    uint8_t buffer[256]; // Buffer length assumes maximum entry name length of 240 characters
-    for (int i = 0, p = 0; i < 16; i++) {
-        packageFile.read((char *) buffer + i * 16, 16);
-        for (int j = 0; j < 16; j++, p++) {
+    std::array<uint8_t, packageEntryBufferSize> buffer{};
+
+    for (auto b = 0, p = 0; b < packageEntryBufferSize; b += packageEntryInformationSize) {
+        packageFile.read(reinterpret_cast<char *>(buffer.data() + b), packageEntryInformationSize);
+
+        for (auto bo = 0; bo < packageEntryInformationSize; bo++, p++) {
             // Find null terminator in entry name
             if (buffer[p] != 0) {
                 continue;
             }
 
             // Read missing bytes for entry information
-            packageFile.read((char *) buffer + (p - j) + 16, j + 1);
+            packageFile.read(reinterpret_cast<char *>(buffer.data() + b + packageEntryInformationSize), bo + 1);
 
             // Deserialize entry name
-            std::string entryName(reinterpret_cast<char const *>(buffer), p);
-            p++; // Skip null terminator
+            std::string entryName(reinterpret_cast<const char *>(buffer.data()), p);
+
+            // Skip null terminator
+            p++;
+
             // Deserialize entry information
-            uint32_t offset = *(uint32_t *) (buffer + p);
-            uint32_t compression = *(uint32_t *) (buffer + p + 4);
-            uint32_t uncompressedLength = *(uint32_t *) (buffer + p + 8);
-            uint32_t length = *(uint32_t *) (buffer + p + 12);
+            uint32_t offset = BufferReadUint32(buffer.data() + p);
+            uint32_t compression = BufferReadUint32(buffer.data() + p + 4);
+            uint32_t uncompressedLength = BufferReadUint32(buffer.data() + p + 8);
+            uint32_t length = BufferReadUint32(buffer.data() + p + 12);
 
             return {entryName, offset, compression, uncompressedLength, length};
         }
@@ -287,8 +299,8 @@ void RenderToolBar() {
 void RenderEntryList() {
     ImGui::Begin("Entries##EntryList");
     for (Entry &e: entries) {
-        if (ImGui::Selectable(e.name.c_str(), e.opened)) {
-            e.opened = true;
+        if (ImGui::Selectable(e.Name.c_str(), e.Opened)) {
+            e.Opened = true;
         }
     }
     ImGui::End();
@@ -297,13 +309,13 @@ void RenderEntryList() {
 void RenderEntryPreview() {
     ImGui::Begin("Preview##EntryPreview");
     bool anyEntryOpened = std::any_of(entries.begin(), entries.end(), [](Entry &e) {
-        return e.opened;
+        return e.Opened;
     });
     if (anyEntryOpened) {
         ImGuiTabBarFlags tabsFlags = ImGuiTabBarFlags_TabListPopupButton | ImGuiTabBarFlags_FittingPolicyScroll;
         if (ImGui::BeginTabBar("##EntryPreviewTabs", tabsFlags)) {
             for (Entry &e: entries) {
-                if (e.opened && ImGui::BeginTabItem(e.name.c_str(), &e.opened, ImGuiTabItemFlags_None)) {
+                if (e.Opened && ImGui::BeginTabItem(e.Name.c_str(), &e.Opened, ImGuiTabItemFlags_None)) {
                     ImGui::EndTabItem();
                 }
             }
@@ -387,7 +399,7 @@ void RenderMain() {
         ImGui::DockBuilderSetNodeSize(dockSpaceId, viewport->Size);
 
         ImGuiID dockMainId = dockSpaceId;
-        ImGuiID dockLeftId = ImGui::DockBuilderSplitNode(dockMainId, ImGuiDir_Left, 0.25f, nullptr, &dockMainId);
+        ImGuiID dockLeftId = ImGui::DockBuilderSplitNode(dockMainId, ImGuiDir_Left, 0.3f, nullptr, &dockMainId);
 
         ImGui::DockBuilderDockWindow("Entries##EntryList", dockLeftId);
         ImGui::DockBuilderDockWindow("Preview##EntryPreview", dockMainId);
