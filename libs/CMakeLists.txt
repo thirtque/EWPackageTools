@@ -36,5 +36,8 @@ target_include_directories(imgui
 
 target_link_libraries(imgui PRIVATE ${OPENGL_LIBRARIES} glfw)
 
+# nativefiledialog (https://github.com/btzy/nativefiledialog-extended#cmake-projects)
+add_subdirectory(nativefiledialog-extended)
+
 # fmt (https://fmt.dev/latest/usage.html#usage-with-cmake)
 add_subdirectory(fmt)

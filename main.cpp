@@ -5,6 +5,8 @@
 #include <imgui_internal.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <iostream>
+#include "dialog.h"
 
 struct State {
     GLFWwindow *glfwWindow;
@@ -170,6 +172,7 @@ bool Initialize(State &state) {
         return false;
     }
     InitializeImGui(state);
+    InitializeDialog();
 
     return true;
 }
@@ -194,11 +197,22 @@ struct Entry {
 
 std::vector<Entry> entries;
 
+void OpenPackage() {
+    auto fileDialogResult = OpenFileDialog();
+    if (fileDialogResult.Status) {
+        std::cout << fileDialogResult.Path << "\n";
+    } else {
+        std::cout << "No path\n";
+    }
+}
+
 void RenderToolBar() {
     ImGui::Button("\ueb62 Save");
 
     ImGui::SameLine();
-    ImGui::Button("\ueb62 Load");
+    if (ImGui::Button("\ueb62 Load")) {
+        OpenPackage();
+    }
 }
 
 void RenderEntryList() {
@@ -266,7 +280,7 @@ void RenderEntryPreview() {
     ImGui::End();
 }
 
-void RenderLayout() {
+void RenderMain() {
     ImGuiViewport *viewport = ImGui::GetMainViewport();
 
     ImGui::SetNextWindowPos(viewport->WorkPos);
@@ -321,10 +335,6 @@ void RenderLayout() {
     RenderEntryPreview();
 }
 
-void Frame() {
-    RenderLayout();
-}
-
 void FrameEnd(State &state) {
     ImGui::Render();
 
@@ -339,6 +349,8 @@ void FrameEnd(State &state) {
 }
 
 void Finalize() {
+    FinalizeDialog();
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
 
@@ -352,7 +364,7 @@ int main() {
     Initialize(state);
     while (Loop(state)) {
         FrameStart(state);
-        Frame();
+        RenderMain();
         FrameEnd(state);
     }
     Finalize();

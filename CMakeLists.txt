@@ -5,10 +5,10 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(libs)
 
-add_executable(untitled3)
+add_executable(untitled3 dialog.cpp dialog.h)
 
 target_sources(untitled3 PRIVATE main.cpp)
 
-target_link_libraries(untitled3 PRIVATE glfw imgui fmt::fmt)
+target_link_libraries(untitled3 PRIVATE glfw imgui nfd fmt::fmt)
 
 file(COPY resources DESTINATION ${CMAKE_BINARY_DIR})
