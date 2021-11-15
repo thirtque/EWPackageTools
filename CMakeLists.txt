@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.20)
 project(untitled3)
 
-set(DEPENDENCIES "")
-
 set(CMAKE_CXX_STANDARD 20)
 
+include(cmake/Variables.cmake)
+include(cmake/build/ImGui.cmake)
 include(cmake/Dependencies.cmake)
 
 add_executable(untitled3 dialog.cpp dialog.h)

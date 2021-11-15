@@ -1,10 +1,10 @@
-#include <vector>
-#include <fmt/core.h>
 #include <GLFW/glfw3.h>
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <fmt/core.h>
+#include <vector>
 #include <fstream>
 #include <array>
 #include "dialog.h"
@@ -14,6 +14,7 @@ struct State {
 };
 
 bool InitializeGlfw(State &state) {
+
     if (!glfwInit()) {
         return false;
     }
@@ -47,9 +48,9 @@ void InitializeImGuiStyle() {
     style.WindowPadding = ImVec2(4.00f, 4.00f);
     style.FramePadding = ImVec2(8.00f, 8.00f);
     style.CellPadding = ImVec2(8.00f, 8.00f);
-//    style.TouchExtraPadding = ImVec2(16.00f, 16.00f);
-//    style.DisplayWindowPadding = ImVec2(16.00f, 16.00f);
-//    style.DisplaySafeAreaPadding = ImVec2(16.00f, 16.00f);
+    //style.TouchExtraPadding = ImVec2(16.00f, 16.00f);
+    //style.DisplayWindowPadding = ImVec2(16.00f, 16.00f);
+    //style.DisplaySafeAreaPadding = ImVec2(16.00f, 16.00f);
 
     // Spacing
     style.ItemSpacing = ImVec2(16.00f, 16.00f);
@@ -147,10 +148,10 @@ void InitializeImGuiFonts() {
     iconsConfig.GlyphMaxAdvanceX = 24;
     iconsConfig.GlyphOffset = ImVec2(0, 3);
 
-    static const ImWchar iconsGlyphRanges[] = {0xEA02, 0xEF30, 0};
+    static const ImWchar iconsGlyphRanges[] = {0xea02, 0xef56, 0};
 
     io.Fonts->AddFontFromFileTTF("resources/roboto.ttf", 20);
-    io.Fonts->AddFontFromFileTTF("resources/tabler.ttf", 24, &iconsConfig, iconsGlyphRanges);
+    io.Fonts->AddFontFromFileTTF("resources/tabler-icons.ttf", 24, &iconsConfig, iconsGlyphRanges);
 }
 
 void InitializeImGui(State &state) {
@@ -291,7 +292,7 @@ void RenderToolBar() {
     ImGui::Button("\ueb62 Save");
 
     ImGui::SameLine();
-    if (ImGui::Button("\ueb62 Open")) {
+    if (ImGui::Button("\ueaad Open")) {
         OpenPackage();
     }
 }
