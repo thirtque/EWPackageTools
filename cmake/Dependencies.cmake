@@ -1,7 +1,7 @@
 # imgui
 list(APPEND DEPENDENCIES imgui)
 
-# nativefiledialog (https://github.com/btzy/nativefiledialog-extended#cmake-projects)
+# nativefiledialog-extended (https://github.com/btzy/nativefiledialog-extended#cmake-projects)
 list(APPEND DEPENDENCIES nfd)
 add_subdirectory(${DEPENDENCIES_DIR}/nativefiledialog-extended)
 

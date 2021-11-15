@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(untitled3)
+project(EWPackageTools)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -7,10 +7,10 @@ include(cmake/Variables.cmake)
 include(cmake/build/ImGui.cmake)
 include(cmake/Dependencies.cmake)
 
-add_executable(untitled3 dialog.cpp dialog.h)
+add_executable(EWPackageTools src/dialog.cpp src/dialog.h)
 
-target_sources(untitled3 PRIVATE main.cpp)
+target_sources(EWPackageTools PRIVATE src/main.cpp)
 
-target_link_libraries(untitled3 PRIVATE ${DEPENDENCIES})
+target_link_libraries(EWPackageTools PRIVATE ${DEPENDENCIES})
 
 file(COPY resources DESTINATION ${CMAKE_BINARY_DIR})

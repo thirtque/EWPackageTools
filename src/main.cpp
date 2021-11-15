@@ -22,7 +22,7 @@ bool InitializeGlfw(State &state) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 
-    state.glfwWindow = glfwCreateWindow(1280, 720, "Hello World", nullptr, nullptr);
+    state.glfwWindow = glfwCreateWindow(1280, 720, "EWPackageTools", nullptr, nullptr);
     if (!state.glfwWindow) {
         glfwTerminate();
         return false;
