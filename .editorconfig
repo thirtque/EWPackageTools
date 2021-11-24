@@ -3,6 +3,31 @@ root = true
 [*]
 charset = utf-8
 end_of_line = lf
-insert_final_newline = true
+insert_final_newline = false
 indent_size = 4
 indent_style = space
+ij_continuation_indent_size = 1
+
+[{*.c,*.c++,*.cc,*.cp,*.cpp,*.cu,*.cuh,*.cxx,*.h,*.h++,*.hh,*.hp,*.hpp,*.hxx,*.i,*.icc,*.ii,*.inl,*.ino,*.ipp,*.m,*.mm,*.pch,*.tcc,*.tpp}]
+ij_continuation_indent_size = 4
+ij_c_align_multiline_array_initializer_expression = false
+ij_c_align_multiline_assignment = false
+ij_c_align_multiline_binary_operation = false
+ij_c_align_multiline_chained_methods = false
+ij_c_align_multiline_for = false
+ij_c_align_multiline_ternary_operation = false
+ij_c_class_constructor_init_list_align_multiline = false
+ij_c_function_call_arguments_align_multiline = false
+ij_c_function_call_arguments_align_multiline_pars = false
+ij_c_function_parameters_align_multiline = false
+ij_c_function_parameters_align_multiline_pars = false
+ij_c_lambda_capture_list_align_multiline = false
+ij_c_lambda_capture_list_align_multiline_bracket = false
+ij_c_method_call_arguments_align_multiline = false
+ij_c_method_parameters_align_multiline = false
+ij_c_shift_operation_align_multiline = false
+ij_c_superclass_list_align_multiline = false
+ij_c_template_call_arguments_align_multiline = false
+ij_c_template_call_arguments_align_multiline_pars = false
+ij_c_template_parameters_align_multiline = false
+ij_c_template_parameters_align_multiline_pars = false

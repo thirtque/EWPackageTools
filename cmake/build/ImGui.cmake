@@ -22,6 +22,9 @@ set(IMGUI_DIR ${DEPENDENCIES_DIR}/imgui)
 
 add_library(imgui STATIC)
 
+# https://github.com/ocornut/imgui/blob/3fde445b91a357db43e78a1526170a479b130f4/imconfig.h#L29-L30
+target_compile_definitions(imgui PRIVATE IMGUI_DISABLE_OBSOLETE_FUNCTIONS)
+
 # https://github.com/ocornut/imgui/blob/3fde445b91a357db4d3e78a1526170a479b130f4/imconfig.h#L71-L74
 target_compile_definitions(imgui PRIVATE IMGUI_ENABLE_FREETYPE)
 
@@ -32,6 +35,7 @@ target_sources(imgui
         ${IMGUI_DIR}/imgui_tables.cpp
         ${IMGUI_DIR}/imgui_widgets.cpp
         ${IMGUI_DIR}/imgui.cpp
+        ${IMGUI_DIR}/misc/cpp/imgui_stdlib.cpp
         ${IMGUI_DIR}/misc/freetype/imgui_freetype.cpp
         ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
         ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
@@ -40,6 +44,7 @@ target_sources(imgui
 target_include_directories(imgui
         PUBLIC ${IMGUI_DIR}
         PUBLIC ${IMGUI_DIR}/backends
+        PUBLIC ${IMGUI_DIR}/misc/cpp
         PUBLIC ${IMGUI_DIR}/misc/freetype
         )
 

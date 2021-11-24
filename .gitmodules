@@ -1,18 +1,24 @@
-[submodule "libs/fmt"]
-	path = libs/fmt
-	url = https://github.com/fmtlib/fmt.git
 [submodule "libs/glfw"]
 	path = libs/glfw
-	url = https://github.com/glfw/glfw
+	url = https://github.com/glfw/glfw.git
 [submodule "libs/imgui"]
 	path = libs/imgui
-	url = https://github.com/ocornut/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "libs/freetype"]
+	path = libs/freetype
+	url = https://gitlab.freedesktop.org/freetype/freetype.git
 [submodule "libs/nativefiledialog-extended"]
 	path = libs/nativefiledialog-extended
 	url = https://github.com/btzy/nativefiledialog-extended.git
 [submodule "libs/zstd"]
 	path = libs/zstd
 	url = https://github.com/facebook/zstd.git
-[submodule "libs/freetype"]
-	path = libs/freetype
-	url = https://gitlab.freedesktop.org/freetype/freetype.git
+[submodule "libs/lz4"]
+	path = libs/lz4
+	url = https://github.com/lz4/lz4.git
+[submodule "libs/lodepng"]
+	path = libs/lodepng
+	url = https://github.com/lvandeve/lodepng.git
+[submodule "libs/fmt"]
+	path = libs/fmt
+	url = https://github.com/fmtlib/fmt.git
