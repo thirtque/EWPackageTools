@@ -1,7 +1,7 @@
-#ifdef _WIN32
-#include <locale>
-#include <codecvt>
-#endif
+//#ifdef _WIN32
+//#include <locale>
+//#include <codecvt>
+//#endif
 
 #include "dialog.h"
 
@@ -22,11 +22,11 @@ namespace Dialog {
         nfdresult_t nfdResult = NFD_OpenDialog(&nfdPath, nfdFilterItem, 1, nfdDefaultPath);
         if (nfdResult == NFD_OKAY) {
             // @todo Check if this helps with Windows build
-#ifdef _WIN32
-            std::string path = std::wstring_convert<std::codecvt_utf8_utf16<nfdchar_t>, nfdchar_t>{}.to_bytes(nfdPath);
-#else
+//#ifdef _WIN32
+//            std::string path = std::wstring_convert<std::codecvt_utf8_utf16<nfdchar_t>, nfdchar_t>{}.to_bytes(nfdPath);
+//#else
             std::string path = nfdPath;
-#endif
+//#endif
             NFD_FreePath(nfdPath);
 
             return {true, path};
@@ -43,11 +43,11 @@ namespace Dialog {
         nfdresult_t nfdResult = NFD_SaveDialog(&nfdPath, nullptr, 0, nfdDefaultPath, nfdDefaultFileName);
         if (nfdResult == NFD_OKAY) {
             // @todo Check if this helps with Windows build
-#ifdef _WIN32
-            std::string path = std::wstring_convert<std::codecvt_utf8_utf16<nfdchar_t>, nfdchar_t>{}.to_bytes(nfdPath);
-#else
+//#ifdef _WIN32
+//            std::string path = std::wstring_convert<std::codecvt_utf8_utf16<nfdchar_t>, nfdchar_t>{}.to_bytes(nfdPath);
+//#else
             std::string path = nfdPath;
-#endif
+//#endif
             NFD_FreePath(nfdPath);
 
             return {true, path};

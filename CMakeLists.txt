@@ -12,4 +12,8 @@ add_executable(EWPackageTools src/buffer.cpp src/hmg.cpp src/image.cpp src/packa
 target_include_directories(EWPackageTools PRIVATE include)
 target_link_libraries(EWPackageTools PRIVATE ${DEPENDENCIES})
 
+if (WIN32 AND MINGW)
+    target_link_libraries(EWPackageTools PRIVATE imm32)
+endif ()
+
 file(COPY resources DESTINATION ${CMAKE_BINARY_DIR})
