@@ -1,3 +1,6 @@
+libs/
+build/
+
 # Created by https://www.toptal.com/developers/gitignore/api/c++,cmake,clion,visualstudio,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=c++,cmake,clion,visualstudio,visualstudiocode
 

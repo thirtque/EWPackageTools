@@ -126,7 +126,64 @@ namespace Package {
         return {packageHeader, entries};
     }
 
+    void WritePackageHeader(std::ofstream &packageFile, PackageHeader &packageHeader) {
+        std::array<uint8_t, 8> buffer{};
+
+        Buffer::WriteUint32(buffer.data(), packageHeader.Signature);
+        Buffer::WriteUint32(buffer.data() + 4, packageHeader.EntryCount);
+
+        packageFile.write(reinterpret_cast<char *>(buffer.data()), buffer.size());
+    }
+
+    void WritePackageEntry(std::ofstream &packageFile, uint32_t entryOffset, Entry &entry) {
+        packageFile.write(entry.Information.Name.c_str(), entry.Information.Name.length() + 1);
+
+        std::array<uint8_t, packageEntryInformationSize> buffer{};
+
+        Buffer::WriteUint32(buffer.data(), entryOffset);
+        Buffer::WriteUint32(buffer.data() + 4, 0);
+        Buffer::WriteUint32(buffer.data() + 8, entry.Data->size());
+        Buffer::WriteUint32(buffer.data() + 12, entry.Data->size());
+
+        packageFile.write(reinterpret_cast<char *>(buffer.data()), buffer.size());
+    }
+
+    void WritePackage(std::ofstream &packageFile, Package &package) {
+        WritePackageHeader(packageFile, package.Header);
+
+        uint32_t entryOffset = 0;
+        entryOffset += 8; // Header size
+        for (auto &entry: package.Entries) {
+            entryOffset += entry.Information.Name.length() + 1; // Entry name length
+            entryOffset += 16; // Entry header size
+        }
+
+        for (auto &entry: package.Entries) {
+            WritePackageEntry(packageFile, entryOffset, entry);
+            entryOffset += entry.Data->size();
+        }
+
+        for (auto &entry: package.Entries) {
+            packageFile.write(reinterpret_cast<char *>(entry.Data->data()), entry.Data->size());
+        }
+    }
+
     void WriteEntry(std::ofstream &entryFile, const Entry &entry) {
         entryFile.write(reinterpret_cast<char *>(entry.Data->data()), entry.Data->size());
+    }
+
+    void ReadEntry(std::ifstream &entryFile, const Entry &entry) {
+        std::array<uint8_t, 1024> buffer{};
+        entry.Data->clear();
+        while (true) {
+            entryFile.read(reinterpret_cast<char *>(buffer.data()), buffer.size());
+            auto n = entryFile.gcount();
+            if (n < buffer.size()) {
+                entry.Data->insert(entry.Data->end(), std::begin(buffer), std::begin(buffer) + n);
+                break;
+            } else {
+                entry.Data->insert(entry.Data->end(), std::begin(buffer), std::end(buffer));
+            }
+        }
     }
 }

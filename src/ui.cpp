@@ -213,7 +213,7 @@ namespace Ui {
     Package::Package package;
 
     void OpenPackage() {
-        auto fileDialogResult = Dialog::OpenFile();
+        auto fileDialogResult = Dialog::OpenFile({{"Eastward Package", "g"}});
         if (!fileDialogResult.Status) {
             return;
         }
@@ -222,6 +222,20 @@ namespace Ui {
         packageFile.open(fileDialogResult.Path, std::ifstream::binary);
         if (packageFile) {
             package = Package::ReadPackage(packageFile);
+        }
+        packageFile.close();
+    }
+
+    void SavePackage() {
+        auto packageFileDialogResult = Dialog::SaveFile("unknown_package.g");
+        if (!packageFileDialogResult.Status) {
+            return;
+        }
+
+        std::ofstream packageFile;
+        packageFile.open(packageFileDialogResult.Path, std::ofstream::binary | std::ifstream::trunc);
+        if (packageFile) {
+            Package::WritePackage(packageFile, package);
         }
         packageFile.close();
     }
@@ -235,6 +249,37 @@ namespace Ui {
         std::ofstream entryFile;
         entryFile.open(fileDialogResult.Path, std::ifstream::binary | std::ifstream::trunc);
         WriteEntry(entryFile, entry);
+        entryFile.close();
+    }
+
+    void ExtractAllEntries() {
+        auto directoryDialogResult = Dialog::SaveDirectory();
+        if (!directoryDialogResult.Status) {
+            return;
+        }
+
+        for (auto &entry: package.Entries) {
+            std::string entryFileName = std::string(entry.Information.Name);
+            std::replace(entryFileName.begin(), entryFileName.end(), '/', '_');
+            std::replace(entryFileName.begin(), entryFileName.end(), '\\', '_');
+            entryFileName = directoryDialogResult.Path + "/" + entryFileName;
+
+            std::ofstream entryFile;
+            entryFile.open(entryFileName, std::ifstream::binary | std::ifstream::trunc);
+            entryFile.write(reinterpret_cast<char *>(entry.Data->data()), entry.Data->size());
+            entryFile.close();
+        }
+    }
+
+    void ReplaceEntry(const Package::Entry &entry) {
+        auto entryFileDialogResult = Dialog::OpenFile({{"All", "*"}});
+        if (!entryFileDialogResult.Status) {
+            return;
+        }
+
+        std::ifstream entryFile;
+        entryFile.open(entryFileDialogResult.Path, std::ifstream::binary);
+        ReadEntry(entryFile, entry);
         entryFile.close();
     }
 
@@ -283,6 +328,18 @@ namespace Ui {
     void RenderToolBar() {
         if (ImGui::Button("\ueaad Open")) {
             OpenPackage();
+        }
+
+        if (!package.Entries.empty()) {
+            ImGui::SameLine();
+            if (ImGui::Button("\ueb62 Save")) {
+                SavePackage();
+            }
+
+            ImGui::SameLine();
+            if (ImGui::Button("\uede9 Extract all")) {
+                ExtractAllEntries();
+            }
         }
     }
 
@@ -458,6 +515,11 @@ namespace Ui {
                                     &e.Opened, tabItemFlags)) {
                         if (ImGui::Button("\uede9 Extract")) {
                             ExtractEntry(e);
+                        }
+
+                        ImGui::SameLine();
+                        if (ImGui::Button("\uebc7 Replace")) {
+                            ReplaceEntry(e);
                         }
 
                         if (e.Type == Package::EntryType::ImageHmg) {

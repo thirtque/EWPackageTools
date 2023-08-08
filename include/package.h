@@ -48,8 +48,8 @@ namespace Package {
     };
 
     Package ReadPackage(std::ifstream &packageFile);
-    //Package WritePackage(std::ofstream &packageFile);
+    void WritePackage(std::ofstream &packageFile, Package &package);
 
-    //Entry ReadEntry(std::ifstream &entryFile);
+    void ReadEntry(std::ifstream &entryFile, const Entry &entry);
     void WriteEntry(std::ofstream &entryFile, const Entry &entry);
 }
