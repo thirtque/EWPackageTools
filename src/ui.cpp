@@ -268,6 +268,26 @@ namespace Ui {
             entryFile.open(entryFileName, std::ifstream::binary | std::ifstream::trunc);
             entryFile.write(reinterpret_cast<char *>(entry.Data->data()), entry.Data->size());
             entryFile.close();
+
+            // Also extract known file types
+            if (entry.Type == Package::EntryType::ImageHmg || entry.Type == Package::EntryType::ImagePng) {
+                std::string entryPngFileName = entryFileName + ".png";
+
+                std::vector<uint8_t> *pngData;
+                if(entry.Type == Package::EntryType::ImageHmg) {
+                    pngData = new std::vector<uint8_t>();
+                    Hmg::ConvertToPng(*entry.Data, *pngData);
+                } else {
+                    pngData = new std::vector<uint8_t>(*entry.Data);
+                }
+
+                std::ofstream entryPngFile;
+                entryPngFile.open(entryPngFileName, std::ifstream::binary | std::ifstream::trunc);
+                entryPngFile.write(reinterpret_cast<char *>(pngData->data()), pngData->size());
+                entryPngFile.close();
+
+                delete pngData;
+            }
         }
     }
 
@@ -293,22 +313,14 @@ namespace Ui {
             return;
         }
 
-        auto imageData = new std::vector<uint8_t>();
-        uint32_t imageWidth;
-        uint32_t imageHeight;
-
-        Hmg::Decode(*entry.Data, *imageData, imageWidth, imageHeight);
-
         auto pngData = new std::vector<uint8_t>();
-
-        lodepng::encode(*pngData, *imageData, imageWidth, imageHeight);
+        Hmg::ConvertToPng(*entry.Data, *pngData);
 
         std::ofstream entryFile;
         entryFile.open(fileDialogResult.Path, std::ifstream::binary | std::ifstream::trunc);
         entryFile.write(reinterpret_cast<char *>(pngData->data()), pngData->size());
         entryFile.close();
 
-        delete imageData;
         delete pngData;
     }
 

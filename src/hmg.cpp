@@ -19,4 +19,16 @@ namespace Hmg {
                 imageData.size()
         );
     }
+
+    void ConvertToPng(const std::vector<uint8_t> &hmgData, std::vector<uint8_t> &pngData) {
+        auto imageData = new std::vector<uint8_t>();
+        uint32_t imageWidth;
+        uint32_t imageHeight;
+
+        Decode(hmgData, *imageData, imageWidth, imageHeight);
+
+        lodepng::encode(pngData, *imageData, imageWidth, imageHeight);
+
+        delete imageData;
+    }
 }

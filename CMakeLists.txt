@@ -13,7 +13,7 @@ target_include_directories(EWPackageTools PRIVATE include)
 target_link_libraries(EWPackageTools PRIVATE ${DEPENDENCIES})
 
 if (WIN32 AND MINGW)
-    # set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -mwindows")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -mwindows")
     target_link_libraries(EWPackageTools PRIVATE imm32)
 endif ()
 
